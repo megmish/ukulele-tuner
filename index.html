@@ -30,6 +30,18 @@
   </div>
 </section>
 
+<section class="video-section">
+  <div class="video-wrapper">
+    <div class="video-label">
+      <span class="video-label-animation"></span>
+      Video Demo
+    </div>
+    <video class="demo-video" controls poster="thumbnail.jpg">
+      <source src="EEC172VideoDemo.mp4" type="video/mp4" />
+    </video>
+  </div>
+</section>
+
 <main class="page">
 <article class="report-section" id="description">
     <div class="section-header">
@@ -37,7 +49,11 @@
       <h2 class="section-title">Description</h2>
     </div>
     <div class="content">
-      <p> xxx</p>
+      <p>
+Musical instruments such as the ukulele must be tuned properly in order to produce accurate and harmonious sound. To do this, each string must be tightened such that it vibrates at the frequency that matches a given tuning type (i.e Standard Tuning: G4, C4, E4, A4).</p>
+      <p>
+The goal of this project was to create a beginner-friendly and highly customizable ukulele tuner. The system uses the INMP441 I2S MEMS microphone to capture sound and uses the YIN pitch detection algorithm to determine the fundamental frequency. The detected frequency is then compared to the frequency of the current string that the user is tuning to determine whether it is within the user-decided sensitivity threshold or not. To assist beginners throughout the tuning process, the display prompts the user to pluck each string in order and indicates whether the tuning peg should be turned clockwise or anti-clockwise. In addition, state changes can be made using the AWS Device Shadow, where the user can change parameters such as tuner sensitivity and various display settings. 
+      </p>
     </div>
 </article>
 
@@ -92,7 +108,7 @@
 
 <hr class="rule"/>
 
-<article class="report-section" id="future work">
+<article class="report-section" id="future">
     <div class="section-header">
       <span class="section-num"> 5</span>
       <h2 class="section-title">Future Work</h2>

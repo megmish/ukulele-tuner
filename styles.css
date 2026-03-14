@@ -5,6 +5,7 @@
   --text: #1a1510;
   --accent: #ba68c8;
   --muted: #8a7f72;
+  --lightmuted: #d6c9b6;
 }
 
 *,
@@ -149,7 +150,6 @@ nav {
   gap: 1rem;
   margin-bottom: 1.5rem;
   padding-bottom: 0.75rem;
-  border-bottom: 2px solid var(--ink);
 }
 .section-num {
   font-family: "IBM Plex Mono", monospace;
@@ -183,7 +183,7 @@ nav {
 
 .subsection-num {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.65rem; 
+  font-size: 0.9rem; 
   color: var(--muted); 
   letter-spacing: 0.05em;
 }
@@ -218,6 +218,11 @@ nav {
   width: 100%;
   margin-top: 1.5rem;
   font-size: 0.9rem;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 8px 8px 0 0;
+  overflow: hidden;
+  border: 1px solid var(--muted);
 }
 
 .bom thead tr{
@@ -230,17 +235,20 @@ nav {
   font-size: 0.65rem; 
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  padding: 0.75rem 1 rem;
-  text-align: left;
+  padding: 0.75rem 1rem;
   font-weight: 500;
+  text-align: left;
 }
+
+.bom thead tr th:first-child { border-radius: 7px 0 0 0; }
+.bom thead tr th:last-child  { border-radius: 0 7px 0 0; }
 
 .bom tbody tr:nth-child(even){
   background: #ffffff; 
 }
 
 .bom tbody tr:hover{
-  background: #f0e8de;
+  background: var(--lightmuted);
 }
 
 .bom td{
@@ -248,6 +256,10 @@ nav {
   border-bottom: 1px solid var(--muted);
   color: var(--text;)
   vertical-align: top;
+}
+
+.bom tbody tr:last-child td {
+  border-bottom: none;
 }
 
 .bom .cost{
@@ -264,6 +276,7 @@ nav {
   background: #f0e8de;
   border: 1px solid var(--muted);
   border-top: none;
+  border-radius: 0 0 8px 8px;
   font-family: 'IBM Plex Mono', monospace;
   font-size: 0.8rem;
   color: var(--text);
@@ -273,3 +286,55 @@ nav {
 .bom-total value {
   color: var(--accent);
 }
+
+/* VIDEO */
+.video-section{
+  background: var(--bg);
+  display: flex;
+  justify-content: center;
+}
+
+.video-wrapper {
+  width: 100%;
+  max-width: 860px;
+  position: relative;
+}
+
+.video-label {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.video-label-animation {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.75); }
+}
+ 
+.demo-video {
+  width: 100%;
+  display: block;
+  border-radius: 20px;
+  border: 3px solid rgba(211,201,189,1);
+  background: #0d0b08;
+  outline: none;
+}
+ 
+
+
