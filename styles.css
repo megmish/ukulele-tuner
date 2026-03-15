@@ -336,5 +336,30 @@ nav {
   outline: none;
 }
  
+/* DIAGRAMS */
+.diagram-section{
+  background: var(--bg);
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+}
+
+.diagram-wrapper{
+  width: 70%;
+  max-width: 860px;
+  position: relative;
+}
+
+.block-diagram {
+  width: 100%;
+  display: block;
+  border-radius: 20px;
+  border: 3px solid rgba(211,201,189,1);
+  background: #0d0b08;
+  outline: none;
+}
+
+
 
 

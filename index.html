@@ -70,15 +70,70 @@ The goal of this project was to create a beginner-friendly and highly customizab
 	<h3 class="subsection-title">Functional Specification</h3>
     </div>
     <div class="content">
-        <p> xxx</p>
+      <p> The figure below depicts a high-level state diagram that
+demonstrates the control flow of the system.
+      </p>
+    </div>
+    </div>
+    <div class="diagram-section">
+      <div class="diagram-wrapper">
+        <img class=block-diagram src="FunctionalSpecification.png"/>
+      </div>
+    </div>
+    <div class="content">
+      <p>
+        <strong>IDLE:</strong> This state is reached when the system is powered ON. 
+    The system establishes internet connection and displays an initialization 
+    message to the user. In this state, the system waits to detect device tilt 
+    to enter the next state.
+      </p>
+      <p>
+        <strong>AWS UPDATE:</strong> Once the device detects tilt, the system sends 
+    a GET request to check if the desired state has been updated from AWS. The 
+    system then parses through the data to update the parameters in the program 
+    accordingly. Once the data has been gathered, the system displays a Type Menu 
+    for the user and waits for the user to select a tuning type using the remote.
+      </p>
+      <p>
+        <strong>TYPE SELECTION:</strong> When the user presses a remote button, the 
+    <code>outputFull</code> is set and the system uses the <code>decode()</code> 
+    function to select a set of note names and frequencies for the next stage. 
+    The device starts sampling data and computing the RMS to check for sound 
+    above the user-decided threshold level.
+      </p>
+      <p>
+        <strong>SIGNAL PROCESSING:</strong> If the detected sound surpassed the sound 
+    amplitude threshold, the detected signal is processed to determine the 
+    fundamental frequency. This frequency is then compared to the ideal frequency 
+    of the current string to check for deviation.
+      </p>
+      <p>
+        <strong>DISPLAY OUTPUT:</strong> The system displays the current note name of 
+    the string being tuned as well as a visual indication of how sharp or flat the 
+    detected frequency is. Once the information is displayed to the user, the state 
+    transitions to the SIGNAL PROCESSING state until the <code>tuningMode</code> 
+    flag is reset, at which point the system returns to idle.
+      </p>
     </div>
     <div class="subsection">
       <div class="subsection-header">
 	<span class="subsection-num"> 2.2</span>
-	<h3 class="subsection-title">State Diagram</h3>
+	<h3 class="subsection-title">System Architecture</h3>
+      </div>
     </div>
     <div class="content">
-        <p> xxx</p>
+      <p> The figure below shows a high-level block diagram of the system architecture for this project.
+      </p>
+    </div>
+    <div class="diagram-section">
+      <div class="diagram-wrapper">
+        <img class=block-diagram src="SystemArchitecture.png"/>
+      </div>
+    </div>
+    <div class="content">
+      <p> 
+As demonstrated above, the sound from the instrument is detected by the INMP441 microphone module and communicated to the CC3200 microcontroller using the I2S protocol. The AT&T S10-S3 remote sends a signal to the IR receiver circuit, which produces an output signal that is connected to a GPIO input pin on the CC3200 board. The built-in BMA222 accelerometer is enabled through I2C in order to detect tilt. The Adafruit OLED display is connected to the CC3200 board via SPI protocol. Lastly, a host device provides power to the CC3200 board through a Micro-USB to USB-A cable, as well as wireless Wifi connectivity. The host device is also set up with an Amazon Web Services (AWS) account, where the device shadow can be remotely updated and accessed with a GET request. 
+      </p>
     </div>
 </article>
 
@@ -90,7 +145,18 @@ The goal of this project was to create a beginner-friendly and highly customizab
       <h2 class="section-title">Implementation</h2>
     </div>
     <div class="content">
-      <p> xxx</p>
+      <p>The first step in the implementation process was to accurately detect frequency from a sound source. For this project, the INMP441 microphone was used for its high SNR. To collect samples, I2S was first initialized in <code>main</code> and the <code>MAP_I2SDataGet()</code> function was used to full a buffer with I2S samples.
+      </p>
+      <p> The YIN method was used to detect frequency while in time domain. First, the RMS of the detected samples was calculated to check if the sound was on average above a user detected sound amplitude threshold. Then, the DC component of the detected signal was removed. In the YIN frequency detection algorithm, the first step was to calculate the squared difference calculate the squared differences between the original signal and a delayed version and store it in the <code>fDiff[]</code> buffer. Then, the contents of the buffer are normalized by their cumulative mean to eliminate common harmonics frequences such as octaves. Then, a frequency window was dynamically calculated within 5 percent of the current string's frequency. Within the <code>lo</code> and <code>hi</code> bounds, the deepest local minimum was found. Lastly, parabolic interpolation was used to more precisely determine the period of the detected signal without increasing sampling rate. This frequency was returned to <code>main</code> and passed into the <code>report_tuning()</code> function, where the deviation in cents between the measured and target frequency was calculated.
+      <p>The next step in the implementation process was to use the accelerometer built into the CC3200 board to detect that the board is tilted towards the instrument to ensure that the detected samples were as clean as possible. First, I2C was configured in <code>main</code>. Then, a <code>do-while</code> loop was used to read the accelerometer x and y values, type-cast those values to an 8-bit integer value, and compare them to threshold tilt values. To ensure that the x-tilt was in correct direction, the conditional statement was written to check for x-tilt in the negative direction below a threshold value determined through trial and error, as well as check for near-0 y-tilt. 
+      </p>
+      <p> xxx
+      </p>
+      <p>Once the AWS connection was successful, the full system was connected to an IR receiver circuit so that the tuning type could be selected via remote button press. First, GPIO falling-edge interrupts and the built-in timer were configured in <code>main</code>. In the GPIO interrupt handler, the width of each pulse was calculated by checking the value of the countdown timer and subtracting from the last stored value. If a wide pulse was detected, the variable <code>IR_Output</code> was shifted left. If a narrow pulse was detected, <code>IR_Output</code> was shifted left and appended with a 1. Before filling <code>IR_Output</code>, the start flag must be set to ensure that the signal is always read from the beginning. After each detected pulse, the <code>count</code> variable is incremented. Once 48 pulses are detected, the <code>outputFull</code> flag is set. In <code>main</code>, once the <code>outputFull</code> flag is set, the 
+<code>decode()</code> function is called, where a <code>switch-case</code> statement is used to check the value of <code>IR_Output</code> and select which array of notes and frequencies to use. 
+      </p>
+      <p> xxx
+      </p>
     </div>
 </article>
 
@@ -102,7 +168,10 @@ The goal of this project was to create a beginner-friendly and highly customizab
       <h2 class="section-title">Challenges</h2>
     </div>
     <div class="content">
-      <p> xxx</p>
+      <p> One of the challenges we faced during this project was connecting the IR receiver circuit to the rest of the system to enable selection between multiple tuning types. A <code>while</code> loop was used to wait until the receiver output variable was filled with a value corresponding to the pulses detected by the receiver. When running the program, we realized that this loop was impossible to break out of. After building an isolated IR circuit, we noticed that we still were not able to detect a signal, proving that the issue was not with our logic. We decided to use the Logic Analyzer to determine whether or not we were able to receive a signal from the receiver to the microcontroller. Using the datasheet, we tried all available GPIO pins and found that only PIN 50 was capable of detecting the IR signal. Due to the fact that PIN 50 was being used as an I2S line, we checked the datasheet to determine find a replacement pin for the current purpose of the pin. Once we resolved this issue, we were able to detect the button presses successfully.
+      </p>
+      <p>Another issue we faced was harmonic interference. Although we were able to detect the G and C strings with relatively high accuracy, we noticed that we were only able to detect either E or A accurately at any given point. This is because E and A share a strong harmonic due to the fact that they are a perfect fourth apart. To resolve this issue, we decided to update our design to prompt the user to tune each string in order so that a bandpass filter could be applied for each string.
+      </p>
     </div>
 </article>
 
@@ -114,7 +183,12 @@ The goal of this project was to create a beginner-friendly and highly customizab
       <h2 class="section-title">Future Work</h2>
     </div>
     <div class="content">
-      <p> xxx</p>
+      <p> While the current system successfully detects and analyzes the pitch of ukulele strings, several improvements can be made in future work. One potential enhancement is to create a 3D-printed enclosure for the device to conceal wires, as well as a mechanism to attach the tuner to the instrument. 
+      </p>
+      <p>Another potential improvement is to expand the bandwidth of the tuner to support other musical instruments, such as the guitar, violin, or bass. Currently, only 3 of the many available remote buttons are used to select the tuning type, but other buttons could be used to select instrument and display preferences. 
+      </p>
+      <p> We would also like to make hardware improvements to improve the speed and reliability of the system. Our power supply is currently provided by the CC3200 board, which is spotty and creates a flashing effect on the OLED display. In addition, although our chosen microphone works in a completely noise-free setting, a better microphone module can be used to further eliminate noise and allow the tuner to be used reliably in any setting.
+      </p>
     </div>
 </article>
 
@@ -126,7 +200,8 @@ The goal of this project was to create a beginner-friendly and highly customizab
       <h2 class="section-title">Bill of Materials</h2>
     </div>
     <div class="content">
-      <p> xxx</p>
+      <p> Below is a list of all materials used to complete this project.
+      </p>
     </div>
     <table class="bom">
       <thead>
